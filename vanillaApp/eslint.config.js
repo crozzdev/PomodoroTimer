@@ -6,7 +6,7 @@ export default [
     {
         languageOptions: {
             globals: globals.browser,
-            ecmaVersion: 2021, // Supports modern ECMAScript features
+            ecmaVersion: 'latest', // Supports modern ECMAScript features
             sourceType: 'module' // Supports the use of `import` and `export`
         },
         plugins: {
