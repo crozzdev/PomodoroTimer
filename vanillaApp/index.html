@@ -1,13 +1,49 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pomodoro Timer</title>
+</head>
+<header>
+  <h1>Pomodoro Timer Clock</h1>
+</header>
+
+<body>
+  <div id="app">
+    <div class="break-container">
+      <h2 id="break-label" class="label">Break Length</h2>
+      <button id="break-decrement" class="btn-level"><i class="fa fa-arrow-down fa-2x"></i></button>
+      <div id="break-length" class="btn-levl">5</div>
+      <button id="break-increment" class="btn-level"><i class="fa fa-arrow-up fa-2x"></i></button>
+    </div>
+    <div class="session-container">
+      <h2 id="session-label" class="label">Session Length</h2>
+      <button id="session-decrement" class="btn-level"><i class="fa fa-arrow-down fa-2x"></i></button>
+      <div id="session-length" class="btn-levl">25</div>
+      <button id="session-increment" class="btn-level"><i class="fa fa-arrow-up fa-2x"></i></button>
+    </div>
+
+    <div class="timer-container">
+      <div id="timer-label">Session</div>
+      <div id="time-left">25:00</div>
+    </div>
+
+    <div class="timer-controls-container">
+      <button id="start-stop">
+        <i class="fa fa-play fa-2x"></i>
+        <i class="fa fa-pause fa-2x"></i>
+      </button>
+      <button id="reset">
+        <i class="fa fa-refresh fa-2x"></i>
+      </button>
+    </div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+<footer>Designed by CrozzDev</footer>
+
 </html>
