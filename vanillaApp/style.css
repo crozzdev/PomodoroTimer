@@ -49,6 +49,7 @@ header {
   margin: 20px auto 10px auto;
   width: 300px;
   height: 200px;
+  caret-color: transparent;
 }
 
 .timer-container #timer-label {
