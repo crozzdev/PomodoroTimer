@@ -8,23 +8,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pomodoro Timer</title>
 </head>
-<header>
-  <h1>Pomodoro Timer Clock</h1>
-</header>
 
-<body>
+<body class="pomodoro-background session-color">
+  <header>
+    <h1>Pomodoro Timer Clock</h1>
+  </header>
   <div id="app">
     <div class="break-container">
       <h2 id="break-label" class="label">Break Length</h2>
-      <button id="break-decrement" class="btn-level"><i class="fa fa-arrow-down fa-2x"></i></button>
+      <button title="decrement break time" id="break-decrement" class="btn-level"><i
+          class="fa fa-arrow-down fa-2x"></i></button>
       <div id="break-length" class="btn-levl">5</div>
-      <button id="break-increment" class="btn-level"><i class="fa fa-arrow-up fa-2x"></i></button>
+      <button title="increment break time" id="break-increment" class="btn-level"><i
+          class="fa fa-arrow-up fa-2x"></i></button>
     </div>
     <div class="session-container">
       <h2 id="session-label" class="label">Session Length</h2>
-      <button id="session-decrement" class="btn-level"><i class="fa fa-arrow-down fa-2x"></i></button>
+      <button title="decrement session time" id="session-decrement" class="btn-level"><i
+          class="fa fa-arrow-down fa-2x"></i></button>
       <div id="session-length" class="btn-levl">25</div>
-      <button id="session-increment" class="btn-level"><i class="fa fa-arrow-up fa-2x"></i></button>
+      <button title="increment session time" id="session-increment" class="btn-level"><i
+          class="fa fa-arrow-up fa-2x"></i></button>
     </div>
 
     <div class="timer-container">
@@ -33,17 +37,18 @@
     </div>
 
     <div class="timer-controls-container">
-      <button id="start-stop">
+      <button title="start or stop the timer" id="start-stop">
         <i class="fa fa-play fa-2x"></i>
         <i class="fa fa-pause fa-2x"></i>
       </button>
-      <button id="reset">
+      <button title="reset the timer" id="reset">
         <i class="fa fa-refresh fa-2x"></i>
       </button>
     </div>
   </div>
+  <footer>Designed by CrozzDev</footer>
   <script type="module" src="/main.js"></script>
 </body>
-<footer>Designed by CrozzDev</footer>
+
 
 </html>

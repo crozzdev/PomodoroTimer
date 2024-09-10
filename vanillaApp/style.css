@@ -1,5 +1,51 @@
+:root {
+  --session-color: rgb(186, 73, 73);
+  --break-color: rgb(56, 133, 138);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+header {
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: auto;
+}
+
+.session-color {
+  background-color: var(--session-color);
+}
+
+.break-color {
+  background-color: var(--break-color);
+}
+
+.pomodoro-background {
+  min-height: 100vh;
+  width: 100%;
+  color: white;
+  transition: background-color 0.5s ease-in-out;
+  padding-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#app {}
+
+.timer-container {
+  border: 2px solid white;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+footer {
+  margin-top: auto;
 }
