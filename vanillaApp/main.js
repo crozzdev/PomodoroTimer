@@ -9,7 +9,7 @@ const $breakIncrementBtn = document.getElementById('break-increment');
 const $sessionDecrementBtn = document.getElementById('session-decrement');
 const $sessionIncrementBtn = document.getElementById('session-increment');
 
-const $startStopBtn = document.getElementById('start-stop');
+const $startStopBtn = document.getElementById('start_stop');
 const $resetBtn = document.getElementById('reset');
 
 const $timerLabel = document.getElementById('timer-label');
@@ -18,7 +18,10 @@ const $timerLeftLabel = document.getElementById('time-left');
 const $breakLengthLabel = document.getElementById('break-length');
 const $sessionLengthLabel = document.getElementById('session-length');
 
-const alarmSound = new Audio('/audio/alarm_sound.mp3');
+const alarmSound = document.getElementById('beep');
+
+const MAX_TIME = 60;
+const MIN_TIME = 1;
 
 let timeLeftSession = { minutes: 25, seconds: 0 };
 let timeLeftBreak = { minutes: 5, seconds: 0 };
@@ -26,6 +29,7 @@ let sessionMinutes = 25;
 let breakMinutes = 5;
 let isTimerRunning = false;
 let isSessionActive = true;
+let timerInterval;
 
 const formatTime = (minutes, seconds) => {
     const mm = String(minutes).padStart(2, '0');
@@ -33,65 +37,64 @@ const formatTime = (minutes, seconds) => {
     return `${mm}:${ss}`;
 };
 
-const incrementBreakTime = () => {
-    if (breakMinutes < 60 && !isTimerRunning) {
-        breakMinutes += 1;
-        timeLeftBreak.minutes = breakMinutes;
-        $breakLengthLabel.textContent = breakMinutes;
-        if (!isSessionActive) {
-            $timerLeftLabel.textContent = formatTime(breakMinutes, 0);
-        }
+const updateTimeLabel = (minutes, seconds) => {
+    $timerLeftLabel.textContent = formatTime(minutes, seconds);
+};
+
+const updateLengthLabel = ($label, minutes) => {
+    $label.textContent = minutes;
+};
+
+const changeTime = (type, operation) => {
+    if (isTimerRunning) return;
+
+    let minutes;
+    let timeLeft;
+    let $lengthLabel;
+
+    if (type === 'session') {
+        minutes = sessionMinutes;
+        timeLeft = timeLeftSession;
+        $lengthLabel = $sessionLengthLabel;
     } else {
-        return;
+        minutes = breakMinutes;
+        timeLeft = timeLeftBreak;
+        $lengthLabel = $breakLengthLabel;
+    }
+
+    if (operation === 'increment' && minutes < MAX_TIME) {
+        minutes += 1;
+    } else if (operation === 'decrement' && minutes > MIN_TIME) {
+        minutes -= 1;
+    }
+
+    timeLeft.minutes = minutes;
+    timeLeft.seconds = 0;
+    updateLengthLabel($lengthLabel, minutes);
+
+    if (
+        (type === 'session' && isSessionActive) ||
+        (type === 'break' && !isSessionActive)
+    ) {
+        updateTimeLabel(minutes, 0);
+    }
+
+    if (type === 'session') {
+        sessionMinutes = minutes;
+    } else {
+        breakMinutes = minutes;
     }
 };
 
-const incrementSessionTime = () => {
-    if (sessionMinutes < 60 && !isTimerRunning) {
-        sessionMinutes += 1;
-        timeLeftSession.minutes = sessionMinutes;
-        $sessionLengthLabel.textContent = sessionMinutes;
-        if (isSessionActive) {
-            $timerLeftLabel.textContent = formatTime(sessionMinutes, 0);
-        }
-    } else {
-        return;
-    }
-};
-
-const decrementBreakTime = () => {
-    if (breakMinutes > 0 && !isTimerRunning) {
-        breakMinutes -= 1;
-        timeLeftBreak.minutes = breakMinutes;
-        $breakLengthLabel.textContent = breakMinutes;
-        if (!isSessionActive) {
-            $timerLeftLabel.textContent = formatTime(breakMinutes, 0);
-        }
-    } else {
-        return;
-    }
-};
-
-const decrementSessionTime = () => {
-    if (sessionMinutes > 0 && !isTimerRunning) {
-        sessionMinutes -= 1;
-        timeLeftSession.minutes = sessionMinutes;
-        $sessionLengthLabel.textContent = sessionMinutes;
-        if (isSessionActive) {
-            $timerLeftLabel.textContent = formatTime(sessionMinutes, 0);
-        }
-    } else {
-        return;
-    }
-};
-
-const updateColors = () => {
+const updateColorsandLabels = () => {
     if (isSessionActive) {
+        $timerLabel.textContent = 'Session';
         $body.classList.remove('break-color');
         $body.classList.add('session-color');
         $timeContainerDiv[0].classList.remove('timer-container-border-break');
         $timeContainerDiv[0].classList.add('timer-container-border-session');
     } else {
+        $timerLabel.textContent = 'Break';
         $body.classList.remove('session-color');
         $body.classList.add('break-color');
         $timeContainerDiv[0].classList.remove('timer-container-border-session');
@@ -106,22 +109,84 @@ const resetTimer = () => {
     breakMinutes = 5;
     isTimerRunning = false;
     isSessionActive = true;
-    updateColors();
+    updateColorsandLabels();
 
-    $breakLengthLabel.textContent = breakMinutes;
-    $sessionLengthLabel.textContent = sessionMinutes;
+    updateLengthLabel($breakLengthLabel, breakMinutes);
+    updateLengthLabel($sessionLengthLabel, sessionMinutes);
     $timerLabel.textContent = 'Session';
-    $timerLeftLabel.textContent = formatTime(sessionMinutes, 0);
+    updateTimeLabel(sessionMinutes, 0);
+    clearInterval(timerInterval);
+    alarmSound.pause();
+    alarmSound.currentTime = 0;
 };
 
-const startStopTimer = () => {
-    isTimerRunning = !isTimerRunning;
+const updateTimer = (timerRunning) => {
+    if (timerRunning.minutes > 0 || timerRunning.seconds > 0) {
+        if (timerRunning.seconds === 0) {
+            timerRunning.seconds = 59;
+            timerRunning.minutes -= 1;
+        } else {
+            timerRunning.seconds -= 1;
+        }
+
+        updateTimeLabel(timerRunning.minutes, timerRunning.seconds);
+    }
 };
 
-$breakDecrementBtn.addEventListener('click', decrementBreakTime);
-$breakIncrementBtn.addEventListener('click', incrementBreakTime);
+const startStopTimer = (timerRunning) => {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
 
-$sessionDecrementBtn.addEventListener('click', decrementSessionTime);
-$sessionIncrementBtn.addEventListener('click', incrementSessionTime);
+    if (isTimerRunning) {
+        timerInterval = setInterval(() => {
+            if (timerRunning.minutes === 0 && timerRunning.seconds === 0) {
+                alarmSound.play();
+
+                isSessionActive = !isSessionActive;
+                updateColorsandLabels();
+
+                clearInterval(timerInterval);
+
+                timerRunning.minutes = isSessionActive
+                    ? sessionMinutes
+                    : breakMinutes;
+                timerRunning.seconds = 0;
+
+                const nextTimer = isSessionActive
+                    ? timeLeftSession
+                    : timeLeftBreak;
+                startStopTimer(nextTimer);
+            } else {
+                updateTimer(timerRunning);
+            }
+        }, 1000);
+    }
+};
+
+const decideAndStartTimer = () => {
+    if (!isTimerRunning) {
+        isTimerRunning = true;
+        startStopTimer(isSessionActive ? timeLeftSession : timeLeftBreak);
+    } else {
+        isTimerRunning = false;
+        clearInterval(timerInterval);
+    }
+};
+
+$breakDecrementBtn.addEventListener('click', () =>
+    changeTime('break', 'decrement')
+);
+$breakIncrementBtn.addEventListener('click', () =>
+    changeTime('break', 'increment')
+);
+
+$sessionDecrementBtn.addEventListener('click', () =>
+    changeTime('session', 'decrement')
+);
+$sessionIncrementBtn.addEventListener('click', () =>
+    changeTime('session', 'increment')
+);
 
 $resetBtn.addEventListener('click', resetTimer);
+$startStopBtn.addEventListener('click', decideAndStartTimer);
