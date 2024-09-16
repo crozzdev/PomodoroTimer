@@ -22,6 +22,8 @@ const alarmSound = new Audio('/audio/alarm_sound.mp3');
 
 let timeLeftSession = { minutes: 25, seconds: 0 };
 let timeLeftBreak = { minutes: 5, seconds: 0 };
+let sessionMinutes = 25;
+let breakMinutes = 5;
 let isTimerRunning = false;
 let isSessionActive = true;
 
@@ -31,26 +33,13 @@ const formatTime = (minutes, seconds) => {
     return `${mm}:${ss}`;
 };
 
-const updateTimerLeftLabel = (sessionFlag) => {
-    if (sessionFlag) {
-        $timerLeftLabel.textContent = formatTime(
-            timeLeftSession.minutes,
-            timeLeftSession.seconds
-        );
-    } else {
-        $timerLeftLabel.textContent = formatTime(
-            timeLeftBreak.minutes,
-            timeLeftBreak.seconds
-        );
-    }
-};
-
 const incrementBreakTime = () => {
-    if (timeLeftBreak.minutes < 60 && !isTimerRunning) {
-        timeLeftBreak.minutes += 1;
-        $breakLengthLabel.textContent = timeLeftBreak.minutes;
+    if (breakMinutes < 60 && !isTimerRunning) {
+        breakMinutes += 1;
+        timeLeftBreak.minutes = breakMinutes;
+        $breakLengthLabel.textContent = breakMinutes;
         if (!isSessionActive) {
-            updateTimerLeftLabel(isSessionActive);
+            $timerLeftLabel.textContent = formatTime(breakMinutes, 0);
         }
     } else {
         return;
@@ -58,11 +47,12 @@ const incrementBreakTime = () => {
 };
 
 const incrementSessionTime = () => {
-    if (timeLeftSession.minutes < 60 && !isTimerRunning) {
-        timeLeftSession.minutes += 1;
-        $sessionLengthLabel.textContent = timeLeftSession.minutes;
+    if (sessionMinutes < 60 && !isTimerRunning) {
+        sessionMinutes += 1;
+        timeLeftSession.minutes = sessionMinutes;
+        $sessionLengthLabel.textContent = sessionMinutes;
         if (isSessionActive) {
-            updateTimerLeftLabel(isSessionActive);
+            $timerLeftLabel.textContent = formatTime(sessionMinutes, 0);
         }
     } else {
         return;
@@ -70,12 +60,12 @@ const incrementSessionTime = () => {
 };
 
 const decrementBreakTime = () => {
-    if (timeLeftBreak.minutes > 0 && !isTimerRunning) {
-        timeLeftBreak.minutes -= 1;
-        $breakLengthLabel.textContent = timeLeftBreak.minutes;
-
+    if (breakMinutes > 0 && !isTimerRunning) {
+        breakMinutes -= 1;
+        timeLeftBreak.minutes = breakMinutes;
+        $breakLengthLabel.textContent = breakMinutes;
         if (!isSessionActive) {
-            updateTimerLeftLabel(isSessionActive);
+            $timerLeftLabel.textContent = formatTime(breakMinutes, 0);
         }
     } else {
         return;
@@ -83,11 +73,12 @@ const decrementBreakTime = () => {
 };
 
 const decrementSessionTime = () => {
-    if (timeLeftSession.minutes > 0 && !isTimerRunning) {
-        timeLeftSession.minutes -= 1;
-        $sessionLengthLabel.textContent = timeLeftSession.minutes;
+    if (sessionMinutes > 0 && !isTimerRunning) {
+        sessionMinutes -= 1;
+        timeLeftSession.minutes = sessionMinutes;
+        $sessionLengthLabel.textContent = sessionMinutes;
         if (isSessionActive) {
-            updateTimerLeftLabel(isSessionActive);
+            $timerLeftLabel.textContent = formatTime(sessionMinutes, 0);
         }
     } else {
         return;
@@ -111,17 +102,20 @@ const updateColors = () => {
 const resetTimer = () => {
     timeLeftSession = { minutes: 25, seconds: 0 };
     timeLeftBreak = { minutes: 5, seconds: 0 };
+    sessionMinutes = 25;
+    breakMinutes = 5;
     isTimerRunning = false;
     isSessionActive = true;
     updateColors();
 
-    $breakLengthLabel.textContent = timeLeftBreak.minutes;
-    $sessionLengthLabel.textContent = timeLeftSession.minutes;
+    $breakLengthLabel.textContent = breakMinutes;
+    $sessionLengthLabel.textContent = sessionMinutes;
     $timerLabel.textContent = 'Session';
-    $timerLeftLabel.textContent = formatTime(
-        timeLeftSession.minutes,
-        timeLeftSession.seconds
-    );
+    $timerLeftLabel.textContent = formatTime(sessionMinutes, 0);
+};
+
+const startStopTimer = () => {
+    isTimerRunning = !isTimerRunning;
 };
 
 $breakDecrementBtn.addEventListener('click', decrementBreakTime);
