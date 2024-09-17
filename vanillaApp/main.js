@@ -156,6 +156,12 @@ const startStopTimer = (timerRunning) => {
                 const nextTimer = isSessionActive
                     ? timeLeftSession
                     : timeLeftBreak;
+                updateTimeLabel(
+                    nextTimer === timeLeftSession
+                        ? sessionMinutes
+                        : breakMinutes,
+                    0
+                );
                 startStopTimer(nextTimer);
             } else {
                 updateTimer(timerRunning);
